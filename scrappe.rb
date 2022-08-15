@@ -80,11 +80,12 @@ chapters = []
   end
 end
 
-# @param [String] image_extension
+# @param [String] image_path
 # @param [String] image_index
 # @param [String] images_number_size
 # @return [String]
-def image_file(image_extension, image_index, images_number_size)
+def image_file(image_path, image_index, images_number_size)
+  image_extension = File.extname(image_path)
   "#{image_index.to_s.rjust(images_number_size, "0")}#{image_extension}"
 end
 
@@ -117,8 +118,7 @@ def process_chapter(chapter, manga_dir, manga_lang, manga_name)
   chapter_hash = chapter_content['chapter']['hash']
 
   chapter_content['chapter']['data'].each_with_index do |image_path, image_index|
-    image_extension = File.extname(image_path)
-    image_file = File.join(chapter_dir, "#{image_index.to_s.rjust(images_number_size, "0")}#{image_extension}")
+    image_file = File.join(chapter_dir, image_file(image_path, image_index, images_number_size))
     unless File.exist?(image_file)
       url = "https://uploads.mangadex.org/data/#{chapter_hash}/#{image_path}"
       File.write(image_file, download(url, 2))
@@ -129,39 +129,38 @@ def process_chapter(chapter, manga_dir, manga_lang, manga_name)
   unless File.exist?(chapter_cbz)
     Zip::File.open(chapter_cbz, create: true) do |zipfile|
       chapter_content['chapter']['data'].each_with_index do |image_path, image_index|
-        image_extension = File.extname(image_path)
-        image_file_name = image_file(image_extension, image_index, images_number_size)
-        image_file = File.join(chapter_dir, image_file_name)
-        zipfile.add(image_file_name, image_file)
+        image_file_name = image_file(image_path, image_index, images_number_size)
+        image_full_path = File.join(chapter_dir, image_file_name)
+        zipfile.add(image_file_name, image_full_path)
       end
     end
   end
 
-  chapter_adoc = File.join(manga_dir, "#{manga_dir}-#{chapter_number}.adoc")
-  unless File.exist?(chapter_adoc)
-    File.open(chapter_adoc, 'w') do |file|
+  chapter_adoc_file = File.join(manga_dir, "#{manga_dir}-#{chapter_number}.adoc")
+  unless File.exist?(chapter_adoc_file)
+    File.open(chapter_adoc_file, 'w') do |file|
       file << "= #{manga_name} - #{manga_lang} - Chapter #{chapter_number}\n"
       file << ":lang: #{manga_lang}\n"
       chapter_content['chapter']['data'].each_with_index do |image_path, image_index|
-        image_extension = File.extname(image_path)
-        image_file_name = image_file(image_extension, image_index, images_number_size)
-        image_file = File.join(chapter_number, image_file_name)
+        image_file_name = image_file(image_path, image_index, images_number_size)
+        image_full_path = File.join(chapter_number, image_file_name)
         if image_index == 0
-          file << ":front-cover-image: #{image_file}\n"
+          file << ":front-cover-image: #{image_full_path}\n"
           file << "\n"
         end
-        file << "image::#{image_file}[]\n"
+        file << "image::#{image_full_path}[]\n"
       end
     end
   end
 
-  chapter_epub = File.join(manga_dir, "#{manga_dir}-#{chapter_number}.epub")
-  unless File.exist?(chapter_epub)
-    Asciidoctor.convert_file(chapter_adoc, doctype: :book, safe: :unsafe, backend: 'epub3')
+  chapter_epub_file = File.join(manga_dir, "#{manga_dir}-#{chapter_number}.epub")
+  unless File.exist?(chapter_epub_file)
+    Asciidoctor.convert_file(chapter_adoc_file, doctype: :book, safe: :unsafe, backend: 'epub3')
   end
 end
 
 chapters.reverse.each do |chapter|
   process_chapter(chapter, manga_dir, manga_lang, manga_name)
 end
+
 p "DONE !"
