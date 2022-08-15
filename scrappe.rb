@@ -97,8 +97,9 @@ end
 def process_chapter(chapter, manga_dir, manga_lang, manga_name)
   chapter_number = chapter['attributes']['chapter']
   p "Processing chapter [#{chapter_number}]"
-  if chapter['attributes']['externalUrl']
-    p "Chapter has an external URL, skiping it"
+  chapter_external_url = chapter['attributes']['externalUrl']
+  if chapter_external_url
+    p "Chapter has an external URL [#{chapter_external_url}] skipping it"
     return
   end
 
