@@ -23,4 +23,6 @@ If the script fail, for example because of an connection error, you can relaunch
 
 == Notes
 
+Mangadex website is a web application, the script rely on the JSON files that contains the data.
+
 Project was created for my own needs, code is not state of the art or anything, you can contact me if you have troubles with it.
