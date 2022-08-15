@@ -6,6 +6,7 @@ It downloads the images and create CBZ and ePub3 files.
 
 == Setup
 
+. Download the project
 . Install link:https://www.ruby-lang.org/[Ruby], use the version specified in the `.ruby-version` file
 . Install link:https://bundler.io[bundler] by running `gem install bundler`
 . Install libraries by running `bundle install` in the project's directory
