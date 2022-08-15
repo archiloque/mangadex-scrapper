@@ -1,0 +1,25 @@
+= Mangadex scrapper
+
+This script can scrape mangadex so you can read manga offline.
+
+It downloads the images and create CBZ and ePub3 files.
+
+== Setup
+
+. Install link:https://www.ruby-lang.org/[Ruby], use the version specified in the `.ruby-version` file
+. Install link:https://bundler.io[bundler] by running `gem install bundler`
+. Install libraries by running `bundle install` in the project's directory
+
+== Run
+
+Use `ruby scrappe.rb "manga homepage" lang`
+
+Example `./scrape.rb "https://mangadex.org/title/a77742b1-befd-49a4-bff5-1ad4e6b0ef7b/chainsaw-man" en`
+
+The files will be downloaded in a subdirectory named from the manga and languages.
+
+If the script fail, for example because of an connection error, you can relaunch it and it will restart just where it stopped.
+
+== Notes
+
+Project was created for my own needs, code is not state of the art or anything, you can contact me if you have troubles with it.
